@@ -33,6 +33,20 @@ app.get("/register", (req,res) =>{
     res.render("register")
 });
 
+app.post("/register", (req,res) =>{
+  const newUser = new User({
+    email: req.body.username,
+    password: req.body.password
+  })
+
+  newUser.save((err)=>{
+    if(err){
+      console.log(err)
+    } else{
+      res.render("secrets")
+    }
+  })
+})
 
 
 app.listen(3000,function(req,res){
