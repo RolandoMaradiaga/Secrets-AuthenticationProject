@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const mongoose = require("mongoose")
 const app = express();
- 
+const encrypt = require("mongoose-encryption")
 
 app.use(express.static("public"))
 app.set('view engine','ejs')
@@ -14,10 +14,14 @@ app.use(bodyParser.urlencoded({
 
 mongoose.connect("mongodb://localhost:27017/userDB" , {useNewUrlParser: true});
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
   email: String,
   password: String
-}
+});
+
+const secret = "Thisismysecretfortest.";
+//always add the user plugin befor the modal
+userSchema.plugin(encrypt,{secret:secret, encryptedFields: ["password"]}); //encryptedFields encrypts specific fields
 
 const User = new mongoose.model("User", userSchema);
 
@@ -57,6 +61,8 @@ app.post("/login", (req,res) => {
       if(foundUser){
         if(foundUser.password === password){
           res.render("secrets");
+          //console.log(foundUser.password) while testing you can check the password with this command
+          //mongoose decrypts on the findOne method
         }
       }
     }
